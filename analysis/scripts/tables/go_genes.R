@@ -19,12 +19,14 @@ data_frame(term = c('response to oxidative stress',
   summarise(genes = paste(unique(symbol), collapse = ', ')) %>%
   setNames(c('Term', 'Gene Products')) %>%
   xtable(caption = 'Gene members of the three gene ontology terms.',
-         align = 'cp{.45\\textwidth}p{.45\\textwidth}',
+         align = 'cp{.3\\textwidth}p{.7\\textwidth}',
          label = 'tab:go_genes') %>%
   print(include.rownames = FALSE,
         booktabs = TRUE,
         caption.placement = 'top',
-        table.placement = 'H',
+        table.placement = '!ht',
+        add.to.row = list(pos = list(1),
+                          command = '\\midrule '),
         sanitize.text.function = identity,
         comment = FALSE,
         file = paste(tables_dir, 'go_genes.tex', sep = '/'))

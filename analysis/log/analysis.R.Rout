@@ -18,12 +18,12 @@ Type 'q()' to quit R.
 > # load required libraries
 > library(aos)
 > library(tidyverse)
-── [1mAttaching packages[22m ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+── [1mAttaching packages[22m ──────────────────────────────────────────── tidyverse 1.2.1 ──
 [32m✔[39m [34mggplot2[39m 3.0.0     [32m✔[39m [34mpurrr  [39m 0.2.5
 [32m✔[39m [34mtibble [39m 1.4.2     [32m✔[39m [34mdplyr  [39m 0.7.6
 [32m✔[39m [34mtidyr  [39m 0.8.1     [32m✔[39m [34mstringr[39m 1.3.1
 [32m✔[39m [34mreadr  [39m 1.1.1     [32m✔[39m [34mforcats[39m 0.3.0
-── [1mConflicts[22m ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+── [1mConflicts[22m ─────────────────────────────────────────────── tidyverse_conflicts() ──
 [31m✖[39m [34mdplyr[39m::[32mfilter()[39m masks [34mstats[39m::filter()
 [31m✖[39m [34mdplyr[39m::[32mlag()[39m    masks [34mstats[39m::lag()
 > library(reshape2)
@@ -221,14 +221,22 @@ cols(
 [1] TRUE
 > 
 > # run deseq2
-> #dds.design <- data.frame(treatment = factor(design$treatment, levels = c('control', 'h2o2')),
-> #                         time = factor(design$time, levels = c('0', '16', '36')),
-> #                         row.names = design$gsm)
-> #
-> #dds <- DESeqDataSetFromMatrix(countData = mat,
-> #                              colData = dds.design,
-> #                              design = ~ time)
+> dds.design <- data.frame(treatment = factor(design$treatment, levels = c('control', 'h2o2')),
++                          time = factor(design$time, levels = c('0', '16', '36')),
++                          row.names = design$gsm)
+> 
+> dds <- DESeqDataSetFromMatrix(countData = mat,
++                               colData = dds.design,
++                               design = ~ treatment)
+> dds <- DESeq(dds)
+estimating size factors
+estimating dispersions
+gene-wise dispersion estimates
+mean-dispersion relationship
+final dispersion estimates
+fitting model and testing
 > #dds <- DESeq(dds, test = 'LRT', reduced = ~1)
+> dds.res <- results(dds)
 > 
 > # load annotation
 > ann <- read_tsv('data/annotations.tsv')
@@ -242,10 +250,10 @@ cols(
 )
 > 
 > # subset matrix
-> mat <- mat[rowSums(mat) > 1,]
-> mat <- log(mat + 1)
-> ind <- rownames(mat) %in% unique(ann$symbol)
-> dat <- t(mat[ind,])
+> mat1 <- mat[rowSums(mat) > 1,]
+> mat1 <- log(mat1 + 1)
+> ind <- rownames(mat1) %in% unique(ann$symbol)
+> dat <- t(mat1[ind,])
 > dat <- dat[, colMeans(dat) > 0]
 > 
 > # pick threshold
@@ -281,10 +289,20 @@ executing %dopar% sequentially: no parallel backend registered
 > genes <- data_frame(symbol = colnames(dat),
 +                     color = net$colors)
 > 
+> # overrepresentation
+> ind <- with(genes, split(symbol, color))
+> mod <- model.matrix(~design$treatment)
+> 
+> log_mat <- log(mat + 1)
+> mr <- limma::mroast(log_mat,
++                     index = ind,
++                     design = mod)
+Warning message:
+Zero sample variances detected, have been offset away from zero 
 > # clean and save
 > rm(df, ind)
 > save.image('data/aos_wgcna.rda')
 > 
 > proc.time()
    user  system elapsed 
-   8.39    0.47    8.82 
+ 28.720   1.880  30.308 

@@ -16,6 +16,7 @@ data_frame(term = c('response to oxidative stress',
   left_join(ann) %>%
   left_join(genes) %>%
   na.omit() %>%
+  filter(color != 'grey') %>%
   mutate(symbol = paste('\\emph{', symbol, '}', sep = '')) %>%
   group_by(color, term) %>%
   summarise(gene = paste(unique(symbol), collapse = ', ')) %>%
@@ -28,6 +29,9 @@ data_frame(term = c('response to oxidative stress',
   print(include.rownames = FALSE,
         booktabs = TRUE,
         caption.placement = 'top',
+        table.placement = '!ht',
+        add.to.row = list(pos = list(1,2),
+                          command = rep('\\midrule ', 2)),
         sanitize.text.function = identity,
         comment = FALSE,
         file = paste(tables_dir, 'module_members.tex', sep = '/'))

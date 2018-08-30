@@ -9,6 +9,16 @@ load('data/aos_wgcna.rda')
 figures_dir = 'manuscript/figures'
 
 # generate figure
+cmdscale(net$diss) %>%
+  as.data.frame() %>%
+  setNames(c('PC1', 'PC2')) %>%
+  mutate(color = net$colors) %>%
+  filter(color != 'grey') %>%
+  ggplot(aes(x = PC1, y = PC2, color = color)) +
+  geom_point() +
+  scale_color_manual(values = c('blue', 'brown', 'turquoise')) +
+  theme_bw() +
+  theme(legend.position = 'none')
 
 plot_grid({
   corr <- cor(net$mes, as.numeric(as.factor(design$treatment)))
@@ -21,16 +31,15 @@ plot_grid({
     lims(y = c(0, 1)) +
     labs(x = '', y = "Pearsons's Correlation")
   },
-  cmdscale(net$diss) %>%
-    as.data.frame() %>%
-    setNames(c('PC1', 'PC2')) %>%
-    mutate(color = net$colors) %>%
+  data_frame(color = rownames(mr),
+             prop = mr$PropDown + mr$PropUp,
+             fdr = mr$FDR.Mixed) %>%
     filter(color != 'grey') %>%
-    ggplot(aes(x = PC1, y = PC2, color = color)) +
-    geom_point() +
-    scale_color_manual(values = c('blue', 'brown', 'turquoise')) +
+    ggplot(aes(x = color, y = prop)) +
+    geom_col() +
     theme_bw() +
-    theme(legend.position = 'none'),
+    lims(y = c(0, 1)) +
+    labs(x = '', y = "Proportion of DE genes"),
   labels = 'AUTO',
   label_size = 10,
   label_fontface = 'plain',
@@ -39,3 +48,4 @@ plot_grid({
   ggsave(plot = .,
          filename = paste(figures_dir, 'module_cor.png', sep = '/'),
          width = 16, height = 7, units = 'cm')
+

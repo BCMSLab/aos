@@ -17,12 +17,12 @@ Type 'q()' to quit R.
 
 > # load libraries
 > library(tidyverse)
-── [1mAttaching packages[22m ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+── [1mAttaching packages[22m ──────────────────────────────────────────── tidyverse 1.2.1 ──
 [32m✔[39m [34mggplot2[39m 3.0.0     [32m✔[39m [34mpurrr  [39m 0.2.5
 [32m✔[39m [34mtibble [39m 1.4.2     [32m✔[39m [34mdplyr  [39m 0.7.6
 [32m✔[39m [34mtidyr  [39m 0.8.1     [32m✔[39m [34mstringr[39m 1.3.1
 [32m✔[39m [34mreadr  [39m 1.1.1     [32m✔[39m [34mforcats[39m 0.3.0
-── [1mConflicts[22m ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+── [1mConflicts[22m ─────────────────────────────────────────────── tidyverse_conflicts() ──
 [31m✖[39m [34mdplyr[39m::[32mfilter()[39m masks [34mstats[39m::filter()
 [31m✖[39m [34mdplyr[39m::[32mlag()[39m    masks [34mstats[39m::lag()
 > library(xtable)
@@ -44,12 +44,14 @@ Type 'q()' to quit R.
 +   summarise(genes = paste(unique(symbol), collapse = ', ')) %>%
 +   setNames(c('Term', 'Gene Products')) %>%
 +   xtable(caption = 'Gene members of the three gene ontology terms.',
-+          align = 'cp{.45\\textwidth}p{.45\\textwidth}',
++          align = 'cp{.3\\textwidth}p{.7\\textwidth}',
 +          label = 'tab:go_genes') %>%
 +   print(include.rownames = FALSE,
 +         booktabs = TRUE,
 +         caption.placement = 'top',
-+         table.placement = 'H',
++         table.placement = '!ht',
++         add.to.row = list(pos = list(1),
++                           command = '\\midrule '),
 +         sanitize.text.function = identity,
 +         comment = FALSE,
 +         file = paste(tables_dir, 'go_genes.tex', sep = '/'))
@@ -57,4 +59,4 @@ Joining, by = "go"
 > 
 > proc.time()
    user  system elapsed 
-  0.950   0.160   0.996 
+  0.900   0.160   0.956 

@@ -23,23 +23,25 @@ rownames(mat) <- df$gene
 all(colnames(mat) == design$gsm)
 
 # run deseq2
-#dds.design <- data.frame(treatment = factor(design$treatment, levels = c('control', 'h2o2')),
-#                         time = factor(design$time, levels = c('0', '16', '36')),
-#                         row.names = design$gsm)
-#
-#dds <- DESeqDataSetFromMatrix(countData = mat,
-#                              colData = dds.design,
-#                              design = ~ time)
+dds.design <- data.frame(treatment = factor(design$treatment, levels = c('control', 'h2o2')),
+                         time = factor(design$time, levels = c('0', '16', '36')),
+                         row.names = design$gsm)
+
+dds <- DESeqDataSetFromMatrix(countData = mat,
+                              colData = dds.design,
+                              design = ~ treatment)
+dds <- DESeq(dds)
 #dds <- DESeq(dds, test = 'LRT', reduced = ~1)
+dds.res <- results(dds)
 
 # load annotation
 ann <- read_tsv('data/annotations.tsv')
 
 # subset matrix
-mat <- mat[rowSums(mat) > 1,]
-mat <- log(mat + 1)
-ind <- rownames(mat) %in% unique(ann$symbol)
-dat <- t(mat[ind,])
+mat1 <- mat[rowSums(mat) > 1,]
+mat1 <- log(mat1 + 1)
+ind <- rownames(mat1) %in% unique(ann$symbol)
+dat <- t(mat1[ind,])
 dat <- dat[, colMeans(dat) > 0]
 
 # pick threshold
@@ -51,6 +53,14 @@ net <- cna_run(dat, power = 5)
 genes <- data_frame(symbol = colnames(dat),
                     color = net$colors)
 
+# overrepresentation
+ind <- with(genes, split(symbol, color))
+mod <- model.matrix(~design$treatment)
+
+log_mat <- log(mat + 1)
+mr <- limma::mroast(log_mat,
+                    index = ind,
+                    design = mod)
 # clean and save
 rm(df, ind)
 save.image('data/aos_wgcna.rda')
