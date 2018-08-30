@@ -1,0 +1,83 @@
+
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # load required libraries
+> library(tidyverse)
+── [1mAttaching packages[22m ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+[32m✔[39m [34mggplot2[39m 3.0.0     [32m✔[39m [34mpurrr  [39m 0.2.5
+[32m✔[39m [34mtibble [39m 1.4.2     [32m✔[39m [34mdplyr  [39m 0.7.6
+[32m✔[39m [34mtidyr  [39m 0.8.1     [32m✔[39m [34mstringr[39m 1.3.1
+[32m✔[39m [34mreadr  [39m 1.1.1     [32m✔[39m [34mforcats[39m 0.3.0
+── [1mConflicts[22m ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+[31m✖[39m [34mdplyr[39m::[32mfilter()[39m masks [34mstats[39m::filter()
+[31m✖[39m [34mdplyr[39m::[32mlag()[39m    masks [34mstats[39m::lag()
+> library(reshape2)
+
+Attaching package: ‘reshape2’
+
+The following object is masked from ‘package:tidyr’:
+
+    smiths
+
+> library(cowplot)
+
+Attaching package: ‘cowplot’
+
+The following object is masked from ‘package:ggplot2’:
+
+    ggsave
+
+> 
+> # load data
+> load('data/aos_wgcna.rda')
+> 
+> # global variables
+> figures_dir <- 'manuscript/figures'
+> 
+> # generate figure
+> plot_grid(melt(mat) %>%
++             left_join(design, by = c('Var2'='gsm')) %>%
++             ggplot(aes(x = Var2, y = value, fill = time)) +
++             geom_boxplot() +
++             theme_bw() +
++             theme(axis.text.x = element_text(angle = 45, size = 5, hjust = 1),
++                   legend.position = 'none') +
++             labs(x = '', y = 'Log2 (counts + 1)'),
++           cmdscale(dist(t(mat))) %>%
++             as.data.frame() %>%
++             rownames_to_column('gsm') %>%
++             left_join(design) %>%
++             ggplot(aes(x = V1, y = V2, color = time)) +
++             geom_point() +
++             theme_bw() +
++             theme(plot.margin = margin(c(1,1,20,1)),
++                   legend.position = 'none') +
++             labs(x = 'PC1', y = 'PC2'),
++           labels = 'AUTO',
++           label_size = 10,
++           label_fontface = 'plain',
++           scale = .9) %>%
++   ggsave(plot = .,
++          filename = paste(figures_dir, 'counts_qc.png', sep = '/'),
++          width = 16, height = 8, units = 'cm')
+Joining, by = "gsm"
+Warning message:
+Column `Var2`/`gsm` joining factor and character vector, coercing into character vector 
+> 
+> proc.time()
+   user  system elapsed 
+  1.890   0.270   1.989 

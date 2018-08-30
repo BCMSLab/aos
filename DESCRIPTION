@@ -1,0 +1,27 @@
+Package: aos
+Type: Package
+Title: Regulation of Autophagy in Response to Oxidative Stress
+Version: 0.1.0
+Author: Mahmoud Ahmed
+Maintainer: Mahmoud Ahmed <mahmoud.s.fahmy@students.kasralainy.edu.eg>
+Description: A research coponduim for the study on the regulation of autophagy
+  in response to oxidative stress. 
+License: What license is it under?
+License: CC-BY
+LazyData: true
+Suggests: testthat,
+    covr
+Imports: dplyr,
+  tidyr,
+  purrr,
+  AnnotationDbi,
+  Biobase,
+  WGCNA,
+  magrittr,
+  STRINGdb,
+  dynamicTreeCut,
+  clusterProfiler,
+  readr,
+  igraph,
+  reshape2
+RoxygenNote: 6.1.0

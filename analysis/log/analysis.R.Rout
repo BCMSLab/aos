@@ -1,0 +1,290 @@
+
+R version 3.5.0 (2018-04-23) -- "Joy in Playing"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-pc-linux-gnu (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # load required libraries
+> library(aos)
+> library(tidyverse)
+── [1mAttaching packages[22m ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+[32m✔[39m [34mggplot2[39m 3.0.0     [32m✔[39m [34mpurrr  [39m 0.2.5
+[32m✔[39m [34mtibble [39m 1.4.2     [32m✔[39m [34mdplyr  [39m 0.7.6
+[32m✔[39m [34mtidyr  [39m 0.8.1     [32m✔[39m [34mstringr[39m 1.3.1
+[32m✔[39m [34mreadr  [39m 1.1.1     [32m✔[39m [34mforcats[39m 0.3.0
+── [1mConflicts[22m ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+[31m✖[39m [34mdplyr[39m::[32mfilter()[39m masks [34mstats[39m::filter()
+[31m✖[39m [34mdplyr[39m::[32mlag()[39m    masks [34mstats[39m::lag()
+> library(reshape2)
+
+Attaching package: ‘reshape2’
+
+The following object is masked from ‘package:tidyr’:
+
+    smiths
+
+> library(WGCNA)
+Loading required package: dynamicTreeCut
+Loading required package: fastcluster
+
+Attaching package: ‘fastcluster’
+
+The following object is masked from ‘package:stats’:
+
+    hclust
+
+
+==========================================================================
+*
+*  Package WGCNA 1.63 loaded.
+*
+*    Important note: It appears that your system supports multi-threading,
+*    but it is not enabled within WGCNA in R. 
+*    To allow multi-threading within WGCNA with all available cores, use 
+*
+*          allowWGCNAThreads()
+*
+*    within R. Use disableWGCNAThreads() to disable threading if necessary.
+*    Alternatively, set the following environment variable on your system:
+*
+*          ALLOW_WGCNA_THREADS=<number_of_processors>
+*
+*    for example 
+*
+*          ALLOW_WGCNA_THREADS=3
+*
+*    To set the environment variable in linux bash shell, type 
+*
+*           export ALLOW_WGCNA_THREADS=3
+*
+*     before running R. Other operating systems or shells will
+*     have a similar command to achieve the same aim.
+*
+==========================================================================
+
+
+
+Attaching package: ‘WGCNA’
+
+The following object is masked from ‘package:stats’:
+
+    cor
+
+> library(DESeq2)
+Loading required package: S4Vectors
+Loading required package: stats4
+Loading required package: BiocGenerics
+Loading required package: parallel
+
+Attaching package: ‘BiocGenerics’
+
+The following objects are masked from ‘package:parallel’:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB
+
+The following objects are masked from ‘package:dplyr’:
+
+    combine, intersect, setdiff, union
+
+The following objects are masked from ‘package:stats’:
+
+    IQR, mad, sd, var, xtabs
+
+The following objects are masked from ‘package:base’:
+
+    anyDuplicated, append, as.data.frame, basename, cbind, colMeans,
+    colnames, colSums, dirname, do.call, duplicated, eval, evalq,
+    Filter, Find, get, grep, grepl, intersect, is.unsorted, lapply,
+    lengths, Map, mapply, match, mget, order, paste, pmax, pmax.int,
+    pmin, pmin.int, Position, rank, rbind, Reduce, rowMeans, rownames,
+    rowSums, sapply, setdiff, sort, table, tapply, union, unique,
+    unsplit, which, which.max, which.min
+
+
+Attaching package: ‘S4Vectors’
+
+The following objects are masked from ‘package:dplyr’:
+
+    first, rename
+
+The following object is masked from ‘package:tidyr’:
+
+    expand
+
+The following object is masked from ‘package:base’:
+
+    expand.grid
+
+Loading required package: IRanges
+
+Attaching package: ‘IRanges’
+
+The following objects are masked from ‘package:dplyr’:
+
+    collapse, desc, slice
+
+The following object is masked from ‘package:purrr’:
+
+    reduce
+
+Loading required package: GenomicRanges
+Loading required package: GenomeInfoDb
+Loading required package: SummarizedExperiment
+Loading required package: Biobase
+Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    'browseVignettes()'. To cite Bioconductor, see
+    'citation("Biobase")', and for packages 'citation("pkgname")'.
+
+Loading required package: DelayedArray
+Loading required package: matrixStats
+
+Attaching package: ‘matrixStats’
+
+The following objects are masked from ‘package:Biobase’:
+
+    anyMissing, rowMedians
+
+The following object is masked from ‘package:dplyr’:
+
+    count
+
+Loading required package: BiocParallel
+
+Attaching package: ‘DelayedArray’
+
+The following objects are masked from ‘package:matrixStats’:
+
+    colMaxs, colMins, colRanges, rowMaxs, rowMins, rowRanges
+
+The following object is masked from ‘package:purrr’:
+
+    simplify
+
+The following objects are masked from ‘package:base’:
+
+    aperm, apply
+
+> library(org.Hs.eg.db)
+Loading required package: AnnotationDbi
+
+Attaching package: ‘AnnotationDbi’
+
+The following object is masked from ‘package:dplyr’:
+
+    select
+
+
+> 
+> # read data
+> df <- read_tsv('data/GSE104664_counts_totalRNA.txt.gz')
+Parsed with column specification:
+cols(
+  gene = col_character(),
+  `oxstress totalRNA control replicate 1` = col_integer(),
+  `oxstress totalRNA h2o2 16h replicate 1` = col_integer(),
+  `oxstress totalRNA h2o2 36h replicate 1` = col_integer(),
+  `oxstress totalRNA control replicate 2` = col_integer(),
+  `oxstress totalRNA h2o2 16h replicate 2` = col_integer(),
+  `oxstress totalRNA h2o2 36h replicate 2` = col_integer(),
+  `oxstress totalRNA control replicate 3` = col_integer(),
+  `oxstress totalRNA h2o2 16h replicate 3` = col_integer(),
+  `oxstress totalRNA h2o2 36h replicate 3` = col_integer()
+)
+> design <- data_frame(gsm = c('GSM2805219', 'GSM2805213', 'GSM2805216',
++                              'GSM2805220', 'GSM2805214', 'GSM2805217',
++                              'GSM2805221', 'GSM2805215', 'GSM2805218'),
++                      names = names(df)[-1]) %>%
++   mutate(treatment = str_split(names, ' ', simplify = TRUE)[, 3],
++          time = str_split(names, ' ', simplify = TRUE)[, 4],
++          time = case_when(time == '16h' ~ 16, time == '36h' ~ 36, TRUE ~ 0))
+> 
+> mat <- as.matrix(df[, -1])
+> colnames(mat) <- design$gsm
+> rownames(mat) <- df$gene
+> 
+> all(colnames(mat) == design$gsm)
+[1] TRUE
+> 
+> # run deseq2
+> #dds.design <- data.frame(treatment = factor(design$treatment, levels = c('control', 'h2o2')),
+> #                         time = factor(design$time, levels = c('0', '16', '36')),
+> #                         row.names = design$gsm)
+> #
+> #dds <- DESeqDataSetFromMatrix(countData = mat,
+> #                              colData = dds.design,
+> #                              design = ~ time)
+> #dds <- DESeq(dds, test = 'LRT', reduced = ~1)
+> 
+> # load annotation
+> ann <- read_tsv('data/annotations.tsv')
+Parsed with column specification:
+cols(
+  category = col_character(),
+  go = col_character(),
+  evidence = col_character(),
+  ontology = col_character(),
+  symbol = col_character()
+)
+> 
+> # subset matrix
+> mat <- mat[rowSums(mat) > 1,]
+> mat <- log(mat + 1)
+> ind <- rownames(mat) %in% unique(ann$symbol)
+> dat <- t(mat[ind,])
+> dat <- dat[, colMeans(dat) > 0]
+> 
+> # pick threshold
+> sft <- pickSoftThreshold(dat)
+   Power SFT.R.sq    slope truncated.R.sq mean.k. median.k. max.k.
+1      1 0.775000  2.10000         0.8930   89.30     92.30  120.0
+2      2 0.856000  1.07000         0.9070   54.70     57.40   83.1
+3      3 0.788000  0.52300         0.7770   38.00     40.00   63.5
+4      4 0.490000  0.24300         0.4330   28.40     29.40   51.3
+5      5 0.000364  0.00619        -0.0611   22.20     22.30   44.3
+6      6 0.171000 -0.20800         0.1890   17.90     17.60   39.4
+7      7 0.296000 -0.39400         0.4550   14.80     14.20   35.5
+8      8 0.388000 -0.53600         0.6280   12.50     11.70   32.3
+9      9 0.474000 -0.60200         0.7280   10.60      9.84   29.6
+10    10 0.514000 -0.68900         0.7270    9.20      8.24   27.3
+11    12 0.652000 -0.87100         0.8470    7.06      5.98   23.4
+12    14 0.676000 -0.90400         0.9050    5.58      4.45   20.4
+13    16 0.700000 -1.02000         0.9090    4.51      3.40   17.9
+14    18 0.744000 -1.08000         0.9190    3.71      2.67   15.9
+15    20 0.776000 -1.13000         0.9200    3.10      2.11   14.1
+Warning message:
+executing %dopar% sequentially: no parallel backend registered 
+> 
+> # run cna
+> net <- cna_run(dat, power = 5)
+..connectivity..
+..matrix multiplication (system BLAS)..
+..normalization..
+..done.
+ ..cutHeight not given, setting it to 0.964  ===>  99% of the (truncated) height range in dendro.
+ ..done.
+> 
+> genes <- data_frame(symbol = colnames(dat),
++                     color = net$colors)
+> 
+> # clean and save
+> rm(df, ind)
+> save.image('data/aos_wgcna.rda')
+> 
+> proc.time()
+   user  system elapsed 
+   8.39    0.47    8.82 
