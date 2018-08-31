@@ -1,6 +1,6 @@
 # load libraries
 library(tidyverse)
-library(rkip)
+library(aos)
 library(org.Hs.eg.db)
 library(cgdsr)
 library(cRegulome)
@@ -24,5 +24,12 @@ if(!file.exists('data/annotations.tsv')) {
   )
 
   write_tsv(ann, 'data/annotations.tsv')
+}
+
+if(!file.exists('data/interactions_evidence.tsv')) {
+  ann <- read_tsv('data/annotations.tsv')
+  interactions_get(genes = data.frame(symbol = unique(ann$symbol)),
+                   input_directory = 'data', evidence = TRUE) %>%
+    write_tsv('data/interactions_evidence.tsv')
 }
 

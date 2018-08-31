@@ -2,8 +2,10 @@
 library(aos)
 library(tidyverse)
 library(reshape2)
+library(tidygraph)
 library(WGCNA)
 library(DESeq2)
+library(clusterProfiler)
 library(org.Hs.eg.db)
 
 # read data
@@ -53,6 +55,25 @@ net <- cna_run(dat, power = 5)
 genes <- data_frame(symbol = colnames(dat),
                     color = net$colors)
 
+# make graph
+uniq_ann <- ann %>%
+  dplyr::select(symbol, category) %>%
+  unique()
+ind <- uniq_ann$symbol[duplicated(uniq_ann$symbol)]
+
+uniq_ann <- uniq_ann %>%
+  mutate(category = ifelse(symbol %in% ind, 'both', category)) %>%
+  unique()
+
+network <- exportNetworkToVisANT(net$adj, threshold = 0) %>%
+  left_join(genes, by = c('from'='symbol')) %>%
+  left_join(genes, by = c('to'='symbol')) %>%
+  mutate(color = ifelse(color.x == color.y, color.x, 'inbetween')) %>%
+  dplyr::select(from, to, weight, color) %>%
+  as_tbl_graph() %>%
+  left_join(uniq_ann, by = c('name' = 'symbol')) %>%
+  left_join(genes, by = c('name' = 'symbol'))
+
 # overrepresentation
 ind <- with(genes, split(symbol, color))
 mod <- model.matrix(~design$treatment)
@@ -61,6 +82,16 @@ log_mat <- log(mat + 1)
 mr <- limma::mroast(log_mat,
                     index = ind,
                     design = mod)
+
+# cluster profiles
+go_enrichment <- compareCluster(ind,
+                                   fun = 'enrichGO',
+                                   OrgDb = 'org.Hs.eg.db',
+                                   ont = 'MF',
+                                   keyType = 'SYMBOL') %>%
+  gofilter(level = 4) %>%
+  as.data.frame()
+
 # clean and save
-rm(df, ind)
+rm(df, ind, uniq_ann, dds, log_mat, mat1, dds.design, dat)
 save.image('data/aos_wgcna.rda')

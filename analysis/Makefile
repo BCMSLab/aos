@@ -14,11 +14,16 @@ LOG=log
 all: $(LOG)/get_data.R.Rout \
 	$(DATA)/aos_wgcna.rda \
 	$(FIG_DIR)/counts_qc.png \
+	$(FIG_DIR)/diff_expression_qc.png \
 	$(FIG_DIR)/gene_membership.png \
 	$(FIG_DIR)/module_cor.png \
+	$(FIG_DIR)/network.png \
 	$(FIG_DIR)/sft_power.png \
+	$(TAB_DIR)/diff_expression.tex \
+	$(TAB_DIR)/go_enrichment.tex \
 	$(TAB_DIR)/go_genes.tex \
 	$(TAB_DIR)/module_members.tex \
+	$(TAB_DIR)/network_stats.tex \
 	clean
 
 # install/update the functions

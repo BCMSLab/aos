@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/BCMSLab/aos.svg?branch=master)](https://travis-ci.org/BCMSLab/aos)
-
+[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/BCMSLab/aos?branch=master&svg=true)](https://ci.appveyor.com/project/BCMSLab/aos)
 # aos
 
 Data, analysis scripts and output of the analysis of the aos; regulation of autophagy in response to oxidative stress

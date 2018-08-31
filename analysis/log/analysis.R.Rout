@@ -34,6 +34,14 @@ The following object is masked from ‘package:tidyr’:
 
     smiths
 
+> library(tidygraph)
+
+Attaching package: ‘tidygraph’
+
+The following object is masked from ‘package:stats’:
+
+    filter
+
 > library(WGCNA)
 Loading required package: dynamicTreeCut
 Loading required package: fastcluster
@@ -116,6 +124,10 @@ The following objects are masked from ‘package:base’:
 
 Attaching package: ‘S4Vectors’
 
+The following objects are masked from ‘package:tidygraph’:
+
+    active, rename
+
 The following objects are masked from ‘package:dplyr’:
 
     first, rename
@@ -131,6 +143,10 @@ The following object is masked from ‘package:base’:
 Loading required package: IRanges
 
 Attaching package: ‘IRanges’
+
+The following object is masked from ‘package:tidygraph’:
+
+    slice
 
 The following objects are masked from ‘package:dplyr’:
 
@@ -179,10 +195,30 @@ The following objects are masked from ‘package:base’:
 
     aperm, apply
 
+> library(clusterProfiler)
+clusterProfiler v3.8.1  For help: https://guangchuangyu.github.io/software/clusterProfiler
+
+If you use clusterProfiler in published research, please cite:
+Guangchuang Yu, Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.
+
+Attaching package: ‘clusterProfiler’
+
+The following object is masked from ‘package:DelayedArray’:
+
+    simplify
+
+The following object is masked from ‘package:purrr’:
+
+    simplify
+
 > library(org.Hs.eg.db)
 Loading required package: AnnotationDbi
 
 Attaching package: ‘AnnotationDbi’
+
+The following object is masked from ‘package:tidygraph’:
+
+    select
 
 The following object is masked from ‘package:dplyr’:
 
@@ -289,6 +325,28 @@ executing %dopar% sequentially: no parallel backend registered
 > genes <- data_frame(symbol = colnames(dat),
 +                     color = net$colors)
 > 
+> # make graph
+> uniq_ann <- ann %>%
++   dplyr::select(symbol, category) %>%
++   unique()
+> ind <- uniq_ann$symbol[duplicated(uniq_ann$symbol)]
+> 
+> uniq_ann <- uniq_ann %>%
++   mutate(category = ifelse(symbol %in% ind, 'both', category)) %>%
++   unique()
+> 
+> network <- exportNetworkToVisANT(net$adj, threshold = 0) %>%
++   left_join(genes, by = c('from'='symbol')) %>%
++   left_join(genes, by = c('to'='symbol')) %>%
++   mutate(color = ifelse(color.x == color.y, color.x, 'inbetween')) %>%
++   dplyr::select(from, to, weight, color) %>%
++   as_tbl_graph() %>%
++   left_join(uniq_ann, by = c('name' = 'symbol')) %>%
++   left_join(genes, by = c('name' = 'symbol'))
+Warning messages:
+1: Column `from`/`symbol` joining factor and character vector, coercing into character vector 
+2: Column `to`/`symbol` joining factor and character vector, coercing into character vector 
+> 
 > # overrepresentation
 > ind <- with(genes, split(symbol, color))
 > mod <- model.matrix(~design$treatment)
@@ -299,10 +357,20 @@ executing %dopar% sequentially: no parallel backend registered
 +                     design = mod)
 Warning message:
 Zero sample variances detected, have been offset away from zero 
+> 
+> # cluster profiles
+> go_enrichment <- compareCluster(ind,
++                                    fun = 'enrichGO',
++                                    OrgDb = 'org.Hs.eg.db',
++                                    ont = 'MF',
++                                    keyType = 'SYMBOL') %>%
++   gofilter(level = 4) %>%
++   as.data.frame()
+> 
 > # clean and save
-> rm(df, ind)
+> rm(df, ind, uniq_ann, dds, log_mat, mat1, dds.design, dat)
 > save.image('data/aos_wgcna.rda')
 > 
 > proc.time()
    user  system elapsed 
- 28.720   1.880  30.308 
+250.630  16.610 273.324 

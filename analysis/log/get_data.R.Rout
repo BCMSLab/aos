@@ -17,16 +17,15 @@ Type 'q()' to quit R.
 
 > # load libraries
 > library(tidyverse)
-── [1mAttaching packages[22m ────────────────────────────────────────────────── tidyverse 1.2.1 ──
+── [1mAttaching packages[22m ──────────────────────────────────────────── tidyverse 1.2.1 ──
 [32m✔[39m [34mggplot2[39m 3.0.0     [32m✔[39m [34mpurrr  [39m 0.2.5
 [32m✔[39m [34mtibble [39m 1.4.2     [32m✔[39m [34mdplyr  [39m 0.7.6
 [32m✔[39m [34mtidyr  [39m 0.8.1     [32m✔[39m [34mstringr[39m 1.3.1
 [32m✔[39m [34mreadr  [39m 1.1.1     [32m✔[39m [34mforcats[39m 0.3.0
-── [1mConflicts[22m ───────────────────────────────────────────────────── tidyverse_conflicts() ──
+── [1mConflicts[22m ─────────────────────────────────────────────── tidyverse_conflicts() ──
 [31m✖[39m [34mdplyr[39m::[32mfilter()[39m masks [34mstats[39m::filter()
 [31m✖[39m [34mdplyr[39m::[32mlag()[39m    masks [34mstats[39m::lag()
-> library(rkip)
-
+> library(aos)
 > library(org.Hs.eg.db)
 Loading required package: AnnotationDbi
 Loading required package: stats4
@@ -129,10 +128,15 @@ Content type 'unknown' length 621210 bytes (606 KB)
 + 
 +   write_tsv(ann, 'data/annotations.tsv')
 + }
-'select()' returned 1:many mapping between keys and columns
-'select()' returned 1:many mapping between keys and columns
+> 
+> if(!file.exists('data/interactions_evidence.tsv')) {
++   ann <- read_tsv('data/annotations.tsv')
++   interactions_get(genes = data.frame(symbol = unique(ann$symbol)),
++                    input_directory = 'data', evidence = TRUE) %>%
++     write_tsv('data/interactions_evidence.tsv')
++ }
 > 
 > 
 > proc.time()
    user  system elapsed 
-   4.62    0.39   11.42 
+  2.860   0.280  15.257 
