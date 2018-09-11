@@ -19,6 +19,7 @@ ind <-  c('FGF8', 'MDL2','RAB24', 'PTGS1', 'WIPI1','ABCC2','CA3','TAT', 'PXDNL')
     ggraph(layout = 'kk') +
     geom_edge_link(aes(color = color), alpha = .4) +
     geom_node_point(aes(shape = category, size = hub), alpha = .8) +
+    scale_edge_color_manual(values = c('blue', 'brown', 'gray', 'turquoise')) +
     theme_graph() +
     theme(legend.position = 'top',
           legend.direction = 'vertical')) %>%

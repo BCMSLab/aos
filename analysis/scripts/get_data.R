@@ -4,6 +4,7 @@ library(aos)
 library(org.Hs.eg.db)
 library(cgdsr)
 library(cRegulome)
+library(GEOquery)
 
 ## gene expression data
 url <- 'ftp://ftp.ncbi.nlm.nih.gov/geo/series/GSE104nnn/GSE104664/suppl/GSE104664%5Fcounts%5FtotalRNA%2Etxt%2Egz'
@@ -33,3 +34,10 @@ if(!file.exists('data/interactions_evidence.tsv')) {
     write_tsv('data/interactions_evidence.tsv')
 }
 
+gse <- c('GSE87666', 'GSE55696', 'GSE78523')
+map(gse, function(x) {
+  if(!file.exists(paste('data', x, '_series_matrix.txt.gz', sep = '/'))) {
+    getGEO(x,
+           destdir = 'data/')
+  }
+})

@@ -9,17 +9,6 @@ load('data/aos_wgcna.rda')
 figures_dir = 'manuscript/figures'
 
 # generate figure
-cmdscale(net$diss) %>%
-  as.data.frame() %>%
-  setNames(c('PC1', 'PC2')) %>%
-  mutate(color = net$colors) %>%
-  filter(color != 'grey') %>%
-  ggplot(aes(x = PC1, y = PC2, color = color)) +
-  geom_point() +
-  scale_color_manual(values = c('blue', 'brown', 'turquoise')) +
-  theme_bw() +
-  theme(legend.position = 'none')
-
 plot_grid({
   corr <- cor(net$mes, as.numeric(as.factor(design$treatment)))
   data_frame(cor = corr[, 1],

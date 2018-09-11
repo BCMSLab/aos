@@ -16,14 +16,18 @@ all: $(LOG)/get_data.R.Rout \
 	$(FIG_DIR)/counts_qc.png \
 	$(FIG_DIR)/diff_expression_qc.png \
 	$(FIG_DIR)/gene_membership.png \
+	$(FIG_DIR)/member_significance.png \
 	$(FIG_DIR)/module_cor.png \
 	$(FIG_DIR)/network.png \
 	$(FIG_DIR)/sft_power.png \
+	$(FIG_DIR)/senescence_markers.png \
 	$(TAB_DIR)/diff_expression.tex \
 	$(TAB_DIR)/go_enrichment.tex \
 	$(TAB_DIR)/go_genes.tex \
 	$(TAB_DIR)/module_members.tex \
 	$(TAB_DIR)/network_stats.tex \
+	$(TAB_DIR)/novel_interactions.tex \
+	$(TAB_DIR)/previously_reported.tex \
 	clean
 
 # install/update the functions
@@ -43,7 +47,10 @@ $(LOG)/get_data.R.Rout: $(SCRIPTS)/get_data.R
 	R CMD BATCH $(R_OPT) $< $(LOG)/$(<F).Rout
 
 # run the main part of the analysis
-$(DATA)/aos_wgcna.rda: $(SCRIPTS)/analysis.R $(DATA)/GSE104664_counts_totalRNA.txt.gz $(DATA)/annotations.tsv
+$(DATA)/aos_wgcna.rda: $(SCRIPTS)/analysis.R
+	R CMD BATCH $(R_OPT) $< $(LOG)/$(<F).Rout
+
+$(DATA)/aos_preservation.rds: $(SCRIPTS)/analysis.preservation.R $(DATA)/*
 	R CMD BATCH $(R_OPT) $< $(LOG)/$(<F).Rout
 
 # generate tables

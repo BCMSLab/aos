@@ -36,22 +36,12 @@ The following object is masked from ‘package:ggplot2’:
 > 
 > # load data
 > load('data/aos_wgcna.rda')
+
 > 
 > # global variables
 > figures_dir = 'manuscript/figures'
 > 
 > # generate figure
-> cmdscale(net$diss) %>%
-+   as.data.frame() %>%
-+   setNames(c('PC1', 'PC2')) %>%
-+   mutate(color = net$colors) %>%
-+   filter(color != 'grey') %>%
-+   ggplot(aes(x = PC1, y = PC2, color = color)) +
-+   geom_point() +
-+   scale_color_manual(values = c('blue', 'brown', 'turquoise')) +
-+   theme_bw() +
-+   theme(legend.position = 'none')
-> 
 > plot_grid({
 +   corr <- cor(net$mes, as.numeric(as.factor(design$treatment)))
 +   data_frame(cor = corr[, 1],
@@ -84,4 +74,4 @@ The following object is masked from ‘package:ggplot2’:
 > 
 > proc.time()
    user  system elapsed 
-  6.250   0.420   6.517 
+  9.100   0.610   9.794 

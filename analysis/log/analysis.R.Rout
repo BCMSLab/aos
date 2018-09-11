@@ -373,4 +373,4 @@ Zero sample variances detected, have been offset away from zero
 > 
 > proc.time()
    user  system elapsed 
-250.630  16.610 273.324 
+276.650  25.640 307.465 
